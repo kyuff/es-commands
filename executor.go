@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"fmt"
 	"reflect"
 
 	"github.com/kyuff/es"
@@ -24,7 +25,10 @@ func (fn ExecutorFunc[C, S]) Execute(ctx context.Context, cmd C, state S) ([]es.
 func decorateExecutor[C Command, S State](store Store, entityType string, executor Executor[C, S]) func(ctx context.Context, entityID string, command Command) error {
 	var newStateFunc = newInstance[S]()
 	return func(ctx context.Context, entityID string, command Command) error {
-		cmd := command.(C)
+		cmd, ok := command.(C)
+		if !ok {
+			return fmt.Errorf("command %q is %T, expected %T", command.Name(), command, cmd)
+		}
 
 		stream := store.Open(ctx, entityType, entityID)
 		defer func() {

@@ -55,6 +55,25 @@ func TestDispatcher(t *testing.T) {
 		assert.Error(t, err)
 	})
 
+	t.Run("fail with command registered under another name", func(t *testing.T) {
+		var (
+			store      = &StoreMock{}
+			entityType = newEntityType()
+			entityID   = newEntityID()
+			dispatcher = commands.NewDispatcher(store)
+		)
+
+		_ = commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
+			return nil, nil
+		})
+
+		// act
+		err := dispatcher.Dispatch(t.Context(), entityID, TestDoubleCommand{})
+
+		// assert
+		assert.Error(t, err)
+	})
+
 	t.Run("fail with the stream project", func(t *testing.T) {
 		var (
 			store      = &StoreMock{}
