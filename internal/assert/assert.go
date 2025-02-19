@@ -2,6 +2,7 @@ package assert
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 )
 
@@ -94,4 +95,24 @@ func NoPanic(t *testing.T, assert func()) {
 	}()
 
 	assert()
+}
+
+func Match[T ~string](t *testing.T, expectedRE string, got T) bool {
+	t.Helper()
+	re, err := regexp.Compile(expectedRE)
+	if err != nil {
+		t.Fatalf("unexpected regexp: %s", err)
+		return false
+	}
+
+	match := re.MatchString(string(got))
+	if !match {
+		t.Logf(`
+Must match %q
+       Got %q`, expectedRE, got)
+		t.Fail()
+		return false
+	}
+
+	return true
 }

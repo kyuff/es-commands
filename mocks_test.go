@@ -6,6 +6,7 @@ package commands_test
 import (
 	"context"
 	"github.com/kyuff/es"
+	"github.com/kyuff/es-commands"
 	"iter"
 	"sync"
 )
@@ -421,5 +422,67 @@ func (mock *ContentMock) NameCalls() []struct {
 	mock.lockName.RLock()
 	calls = mock.calls.Name
 	mock.lockName.RUnlock()
+	return calls
+}
+
+// MiddlewareMock is a mock implementation of commands.Middleware.
+//
+//	func TestSomethingThatUsesMiddleware(t *testing.T) {
+//
+//		// make and configure a mocked commands.Middleware
+//		mockedMiddleware := &MiddlewareMock{
+//			InterceptFunc: func(next func(ctx context.Context, command commands.Command) error) func(ctx context.Context, command commands.Command) error {
+//				panic("mock out the Intercept method")
+//			},
+//		}
+//
+//		// use mockedMiddleware in code that requires commands.Middleware
+//		// and then make assertions.
+//
+//	}
+type MiddlewareMock struct {
+	// InterceptFunc mocks the Intercept method.
+	InterceptFunc func(next func(ctx context.Context, command commands.Command) error) func(ctx context.Context, command commands.Command) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// Intercept holds details about calls to the Intercept method.
+		Intercept []struct {
+			// Next is the next argument value.
+			Next func(ctx context.Context, command commands.Command) error
+		}
+	}
+	lockIntercept sync.RWMutex
+}
+
+// Intercept calls InterceptFunc.
+func (mock *MiddlewareMock) Intercept(next func(ctx context.Context, command commands.Command) error) func(ctx context.Context, command commands.Command) error {
+	if mock.InterceptFunc == nil {
+		panic("MiddlewareMock.InterceptFunc: method is nil but Middleware.Intercept was just called")
+	}
+	callInfo := struct {
+		Next func(ctx context.Context, command commands.Command) error
+	}{
+		Next: next,
+	}
+	mock.lockIntercept.Lock()
+	mock.calls.Intercept = append(mock.calls.Intercept, callInfo)
+	mock.lockIntercept.Unlock()
+	return mock.InterceptFunc(next)
+}
+
+// InterceptCalls gets all the calls that were made to Intercept.
+// Check the length with:
+//
+//	len(mockedMiddleware.InterceptCalls())
+func (mock *MiddlewareMock) InterceptCalls() []struct {
+	Next func(ctx context.Context, command commands.Command) error
+} {
+	var calls []struct {
+		Next func(ctx context.Context, command commands.Command) error
+	}
+	mock.lockIntercept.RLock()
+	calls = mock.calls.Intercept
+	mock.lockIntercept.RUnlock()
 	return calls
 }
