@@ -140,6 +140,28 @@ func TestAsserts(t *testing.T) {
 			},
 			failed: true,
 		},
+
+		{
+			name: "Match success",
+			assert: func(t *testing.T) {
+				assert.Match(t, "^[A-Z][0-9].*$", "B5something")
+			},
+			failed: false,
+		},
+		{
+			name: "Match failed",
+			assert: func(t *testing.T) {
+				assert.Match(t, "^[A-Z][0-9].*$", "!B5something")
+			},
+			failed: true,
+		},
+		{
+			name: "Match failed compile",
+			assert: func(t *testing.T) {
+				assert.Match(t, "(", "RE cannot compile")
+			},
+			failed: true,
+		},
 	}
 
 	for _, testCase := range testCases {
