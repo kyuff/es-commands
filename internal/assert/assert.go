@@ -101,7 +101,8 @@ func Match[T ~string](t *testing.T, expectedRE string, got T) bool {
 	t.Helper()
 	re, err := regexp.Compile(expectedRE)
 	if err != nil {
-		t.Fatalf("unexpected regexp: %s", err)
+		t.Logf("unexpected regexp: %s", err)
+		t.Fail()
 		return false
 	}
 
