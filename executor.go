@@ -57,7 +57,6 @@ func decorateExecutor[C Command, S State](store Store, entityType string, execut
 
 		return nil
 	}
-
 }
 
 func newInstance[T any]() func() T {

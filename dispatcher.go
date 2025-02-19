@@ -3,6 +3,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sync"
 
 	"github.com/kyuff/es"
@@ -12,17 +13,20 @@ type Store interface {
 	Open(ctx context.Context, entityType string, entityID string) es.Stream
 }
 
-func NewDispatcher(store Store) *Dispatcher {
+func NewDispatcher(store Store, middlewares ...Middleware) *Dispatcher {
+	slices.Reverse(middlewares)
 	return &Dispatcher{
-		store:     store,
-		executors: make(map[string]func(ctx context.Context, entityID string, cmd Command) error),
+		store:       store,
+		executors:   make(map[string]func(ctx context.Context, entityID string, cmd Command) error),
+		middlewares: middlewares,
 	}
 }
 
 type Dispatcher struct {
-	store     Store
-	mux       sync.RWMutex
-	executors map[string]func(ctx context.Context, entityID string, cmd Command) error
+	store       Store
+	mux         sync.RWMutex
+	executors   map[string]func(ctx context.Context, entityID string, cmd Command) error
+	middlewares []Middleware
 }
 
 func (d *Dispatcher) Dispatch(ctx context.Context, entityID string, cmd Command) error {
