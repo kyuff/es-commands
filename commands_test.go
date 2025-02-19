@@ -8,6 +8,14 @@ func (cmd TestCommand) Name() string {
 	return "TestCommand"
 }
 
+type TestDoubleCommand struct {
+	Value string
+}
+
+func (cmd TestDoubleCommand) Name() string {
+	return "TestCommand"
+}
+
 type TestPointerCommand struct {
 	Value string
 }
