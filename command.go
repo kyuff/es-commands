@@ -1,5 +1,5 @@
 package commands
 
 type Command interface {
-	Name() string
+	CommandName() string
 }

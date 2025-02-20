@@ -22,14 +22,14 @@ func SLogMiddleware(logger *slog.Logger) MiddlewareFunc {
 
 			log := logger.WithGroup("commands").With(
 				"duration", duration.Milliseconds(),
-				"name", command.Name(),
+				"name", command.CommandName(),
 			)
 			if err != nil {
-				log.ErrorContext(ctx, fmt.Sprintf("[commands] %q executed in %s: %s", command.Name(), duration, err))
+				log.ErrorContext(ctx, fmt.Sprintf("[commands] %q executed in %s: %s", command.CommandName(), duration, err))
 				return err
 			}
 
-			log.InfoContext(ctx, fmt.Sprintf("[commands] %q executed in %s", command.Name(), duration))
+			log.InfoContext(ctx, fmt.Sprintf("[commands] %q executed in %s", command.CommandName(), duration))
 
 			return nil
 		}
