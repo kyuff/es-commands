@@ -6,3 +6,4 @@
 [![codecov](https://codecov.io/gh/kyuff/es-commands/graph/badge.svg?token=GEH9FYR9RW)](https://codecov.io/gh/kyuff/es-commands)
 
 Library to work with Commands in an Event Sourced application
+
