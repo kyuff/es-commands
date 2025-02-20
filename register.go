@@ -42,10 +42,10 @@ func getName[C Command]() string {
 	if typ.Kind() == reflect.Pointer {
 		typ = typ.Elem()
 		var c = reflect.New(typ).Interface().(C)
-		return c.Name()
+		return c.CommandName()
 	} else {
 		var c C
 		//goland:noinspection ALL
-		return c.Name()
+		return c.CommandName()
 	}
 }

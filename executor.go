@@ -27,7 +27,7 @@ func decorateExecutor[C Command, S State](store Store, entityType string, execut
 	return func(ctx context.Context, entityID string, command Command) error {
 		cmd, ok := command.(C)
 		if !ok {
-			return fmt.Errorf("command %q is %T, expected %T", command.Name(), command, cmd)
+			return fmt.Errorf("command %q is %T, expected %T", command.CommandName(), command, cmd)
 		}
 
 		stream := store.Open(ctx, entityType, entityID)

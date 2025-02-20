@@ -37,9 +37,9 @@ func (d *Dispatcher) Dispatch(ctx context.Context, entityID string, cmd Command)
 	d.mux.RLock()
 	defer d.mux.RUnlock()
 
-	executor, ok := d.executors[cmd.Name()]
+	executor, ok := d.executors[cmd.CommandName()]
 	if !ok {
-		return fmt.Errorf("command %s not registered", cmd.Name())
+		return fmt.Errorf("command %s not registered", cmd.CommandName())
 	}
 
 	return executor(ctx, entityID, cmd)

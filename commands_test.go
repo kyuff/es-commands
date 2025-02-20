@@ -4,7 +4,7 @@ type TestCommand struct {
 	Value string
 }
 
-func (cmd TestCommand) Name() string {
+func (cmd TestCommand) CommandName() string {
 	return "TestCommand"
 }
 
@@ -12,7 +12,7 @@ type TestDoubleCommand struct {
 	Value string
 }
 
-func (cmd TestDoubleCommand) Name() string {
+func (cmd TestDoubleCommand) CommandName() string {
 	return "TestCommand"
 }
 
@@ -20,7 +20,7 @@ type TestPointerCommand struct {
 	Value string
 }
 
-func (cmd *TestPointerCommand) Name() string {
+func (cmd *TestPointerCommand) CommandName() string {
 	return "TestPointerCommand"
 }
 
@@ -28,6 +28,6 @@ type TestPanicCommand struct {
 	Value string
 }
 
-func (cmd TestPanicCommand) Name() string {
+func (cmd TestPanicCommand) CommandName() string {
 	panic("TestPanicCommand")
 }
