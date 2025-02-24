@@ -9,10 +9,7 @@ permissions:
 
 on:
   schedule:
-    interval: "weekly"
-    day: "sunday"
-    timezone: "Europe/Copenhagen"
-    time: "23:00"
+    - cron:  "0 23 * * SUN"
   # Allow this workflow to be manually triggered
   workflow_dispatch:
 
