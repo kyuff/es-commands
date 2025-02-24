@@ -1,4 +1,4 @@
-name: template-sync
+name: Sync Library Template
 
 # Doc: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 # Doc: https://github.com/marketplace/actions/actions-template-sync
@@ -34,7 +34,7 @@ jobs:
         uses: AndreasAugustin/actions-template-sync@v2
         if: github.repository != env.SOURCE_REPOSITORY
         with:
-          github_token: ${{ secrets.REPO_SYNC_PAT }}
+          source_gh_token: ${{ secrets.REPO_SYNC_PAT }}
           source_repo_path: ${{ env.SOURCE_REPOSITORY }}
           upstream_branch: ${{ env.SOURCE_BRANCH }}
           pr_title: "Update from upstream template"
