@@ -376,8 +376,8 @@ func (mock *StreamMock) WriteCalls() []struct {
 //
 //		// make and configure a mocked commands.esContent
 //		mockedesContent := &ContentMock{
-//			NameFunc: func() string {
-//				panic("mock out the Name method")
+//			EventNameFunc: func() string {
+//				panic("mock out the EventName method")
 //			},
 //		}
 //
@@ -386,42 +386,42 @@ func (mock *StreamMock) WriteCalls() []struct {
 //
 //	}
 type ContentMock struct {
-	// NameFunc mocks the Name method.
-	NameFunc func() string
+	// EventNameFunc mocks the EventName method.
+	EventNameFunc func() string
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// Name holds details about calls to the Name method.
-		Name []struct {
+		// EventName holds details about calls to the EventName method.
+		EventName []struct {
 		}
 	}
-	lockName sync.RWMutex
+	lockEventName sync.RWMutex
 }
 
-// Name calls NameFunc.
-func (mock *ContentMock) Name() string {
-	if mock.NameFunc == nil {
-		panic("ContentMock.NameFunc: method is nil but esContent.Name was just called")
+// EventName calls EventNameFunc.
+func (mock *ContentMock) EventName() string {
+	if mock.EventNameFunc == nil {
+		panic("ContentMock.EventNameFunc: method is nil but esContent.EventName was just called")
 	}
 	callInfo := struct {
 	}{}
-	mock.lockName.Lock()
-	mock.calls.Name = append(mock.calls.Name, callInfo)
-	mock.lockName.Unlock()
-	return mock.NameFunc()
+	mock.lockEventName.Lock()
+	mock.calls.EventName = append(mock.calls.EventName, callInfo)
+	mock.lockEventName.Unlock()
+	return mock.EventNameFunc()
 }
 
-// NameCalls gets all the calls that were made to Name.
+// EventNameCalls gets all the calls that were made to EventName.
 // Check the length with:
 //
-//	len(mockedesContent.NameCalls())
-func (mock *ContentMock) NameCalls() []struct {
+//	len(mockedesContent.EventNameCalls())
+func (mock *ContentMock) EventNameCalls() []struct {
 } {
 	var calls []struct {
 	}
-	mock.lockName.RLock()
-	calls = mock.calls.Name
-	mock.lockName.RUnlock()
+	mock.lockEventName.RLock()
+	calls = mock.calls.EventName
+	mock.lockEventName.RUnlock()
 	return calls
 }
 
