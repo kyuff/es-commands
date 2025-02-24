@@ -1,0 +1,42 @@
+name: template-sync
+
+# Doc: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+# Doc: https://github.com/marketplace/actions/actions-template-sync
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron:  "0 23 * * SUN"
+  # Allow this workflow to be manually triggered
+  workflow_dispatch:
+
+env:
+  SOURCE_BRANCH: main
+  SOURCE_REPOSITORY: kyuff/template-go-library
+
+jobs:
+  repo-sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Doc: https://github.com/marketplace/actions/checkout
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v4
+        if: github.repository != env.SOURCE_REPOSITORY
+        #with:
+        #  token: ${{ secrets.REPO_SYNC_PAT }}
+
+      # Doc: https://github.com/marketplace/actions/actions-template-sync
+      - name: actions-template-sync
+        uses: AndreasAugustin/actions-template-sync@v2
+        if: github.repository != env.SOURCE_REPOSITORY
+        with:
+          github_token: ${{ secrets.REPO_SYNC_PAT }}
+          source_repo_path: ${{ env.SOURCE_REPOSITORY }}
+          upstream_branch: ${{ env.SOURCE_BRANCH }}
+          pr_title: "Update from upstream template"
+          pr_commit_msg: "chore(template): upstream template update"
+          pr_labels: 'template'
