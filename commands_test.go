@@ -31,3 +31,15 @@ type TestPanicCommand struct {
 func (cmd TestPanicCommand) CommandName() string {
 	panic("TestPanicCommand")
 }
+
+type TestMyCommand struct {
+	Value string
+}
+
+func (cmd TestMyCommand) CommandName() string {
+	return "TestMyCommand"
+}
+
+func (cmd TestMyCommand) CustomMethod() bool {
+	return true
+}

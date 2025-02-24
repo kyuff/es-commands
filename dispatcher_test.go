@@ -187,7 +187,7 @@ func TestDispatcher(t *testing.T) {
 			stream     = &StreamMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		store.OpenFunc = func(ctx context.Context, entityType string, entityID string) es.Stream {
@@ -218,7 +218,7 @@ func TestDispatcher(t *testing.T) {
 			stream     = &StreamMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 			events     = []es.Content{&ContentMock{}, &ContentMock{}}
 		)
 
@@ -326,6 +326,46 @@ func TestDispatcher(t *testing.T) {
 			assert.Equal(t, 1, len(m.InterceptCalls()))
 		}
 		assert.EqualSlice(t, []int{0, 1, 0, 0}, calls)
+	})
 
+	t.Run("successfully call executor on custom command type", func(t *testing.T) {
+		type MyCommandType interface {
+			CommandName() string
+			CustomMethod() bool
+		}
+
+		var (
+			store      = &StoreMock{}
+			stream     = &StreamMock{}
+			entityType = newEntityType()
+			entityID   = newEntityID()
+			dispatcher = commands.NewDispatcher[MyCommandType](store, commands.DefaultSlog[MyCommandType]())
+			events     = []es.Content{&ContentMock{}, &ContentMock{}}
+		)
+
+		store.OpenFunc = func(ctx context.Context, entityType string, entityID string) es.Stream {
+			return stream
+		}
+		stream.ProjectFunc = func(handler es.Handler) error {
+			return nil
+		}
+		stream.WriteFunc = func(got ...es.Content) error {
+			assert.EqualSlice(t, events, got)
+			return nil
+		}
+		stream.CloseFunc = func() error {
+			return nil
+		}
+
+		_ = commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
+			return events, nil
+		})
+
+		// act
+		err := dispatcher.Dispatch(t.Context(), entityID, TestMyCommand{})
+
+		// assert
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(stream.WriteCalls()))
 	})
 }

@@ -21,13 +21,13 @@ func TestRegister(t *testing.T) {
 
 	var registerTestCases = []struct {
 		name      string
-		act       func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error
+		act       func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error
 		expectErr bool
 	}{
 
 		{
 			name: "value command and receiver",
-			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error {
+			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error {
 				return commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
 					return nil, nil
 				})
@@ -36,7 +36,7 @@ func TestRegister(t *testing.T) {
 		},
 		{
 			name: "pointer command value receiver",
-			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error {
+			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error {
 				return commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd *TestCommand, state *StateMock) ([]es.Content, error) {
 					return nil, nil
 				})
@@ -45,7 +45,7 @@ func TestRegister(t *testing.T) {
 		},
 		{
 			name: "pointer command and receiver",
-			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error {
+			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error {
 				return commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd *TestPointerCommand, state *StateMock) ([]es.Content, error) {
 					return nil, nil
 				})
@@ -54,7 +54,7 @@ func TestRegister(t *testing.T) {
 		},
 		{
 			name: "panic command name",
-			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error {
+			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error {
 				return commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestPanicCommand, state *StateMock) ([]es.Content, error) {
 					return nil, nil
 				})
@@ -63,7 +63,7 @@ func TestRegister(t *testing.T) {
 		},
 		{
 			name: "register twice",
-			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher, entityType string) error {
+			act: func(t *testing.T, store commands.Store, dispatcher *commands.Dispatcher[commands.Command], entityType string) error {
 				return errors.Join(
 					commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
 						return nil, nil
@@ -82,7 +82,7 @@ func TestRegister(t *testing.T) {
 			// arrange
 			var (
 				store      = &StoreMock{}
-				dispatcher = commands.NewDispatcher(store)
+				dispatcher = commands.NewDispatcher[commands.Command](store)
 				entityType = newEntityType()
 			)
 

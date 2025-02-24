@@ -17,7 +17,7 @@ func TestSLogMiddleware(t *testing.T) {
 		var (
 			buf        = &bytes.Buffer{}
 			logger     = slog.New(slog.NewTextHandler(buf, &slog.HandlerOptions{}))
-			middleware = commands.SLogMiddleware(logger)
+			middleware = commands.SLogMiddleware[commands.Command](logger)
 			sut        = middleware.Intercept(func(ctx context.Context, command commands.Command) error {
 				return errors.New("test error")
 			})
@@ -40,7 +40,7 @@ func TestSLogMiddleware(t *testing.T) {
 		var (
 			buf        = &bytes.Buffer{}
 			logger     = slog.New(slog.NewTextHandler(buf, &slog.HandlerOptions{}))
-			middleware = commands.SLogMiddleware(logger)
+			middleware = commands.SLogMiddleware[commands.Command](logger)
 			sut        = middleware.Intercept(func(ctx context.Context, command commands.Command) error {
 				return nil
 			})
@@ -60,7 +60,7 @@ func TestSLogMiddleware(t *testing.T) {
 
 	t.Run("log default", func(t *testing.T) {
 		// act
-		got := commands.DefaultSlog()
+		got := commands.DefaultSlog[commands.Command]()
 
 		// assert
 		if got == nil {
