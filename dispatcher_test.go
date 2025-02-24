@@ -40,7 +40,7 @@ func TestDispatcher(t *testing.T) {
 		var (
 			store      = &StoreMock{}
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		// act
@@ -55,7 +55,7 @@ func TestDispatcher(t *testing.T) {
 			store      = &StoreMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		_ = commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
@@ -74,7 +74,7 @@ func TestDispatcher(t *testing.T) {
 			store      = &StoreMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		_ = commands.RegisterFunc(dispatcher, entityType, func(ctx context.Context, cmd TestCommand, state *StateMock) ([]es.Content, error) {
@@ -94,7 +94,7 @@ func TestDispatcher(t *testing.T) {
 			stream     = &StreamMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		store.OpenFunc = func(ctx context.Context, entityType string, entityID string) es.Stream {
@@ -124,7 +124,7 @@ func TestDispatcher(t *testing.T) {
 			stream     = &StreamMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		store.OpenFunc = func(ctx context.Context, entityType string, entityID string) es.Stream {
@@ -154,7 +154,7 @@ func TestDispatcher(t *testing.T) {
 			stream     = &StreamMock{}
 			entityType = newEntityType()
 			entityID   = newEntityID()
-			dispatcher = commands.NewDispatcher(store)
+			dispatcher = commands.NewDispatcher[commands.Command](store)
 		)
 
 		store.OpenFunc = func(ctx context.Context, entityType string, entityID string) es.Stream {

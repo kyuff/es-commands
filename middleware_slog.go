@@ -7,13 +7,13 @@ import (
 	"time"
 )
 
-func DefaultSlog() Middleware {
-	return SLogMiddleware(slog.Default())
+func DefaultSlog[CMD Command]() Middleware[CMD] {
+	return SLogMiddleware[CMD](slog.Default())
 }
 
-func SLogMiddleware(logger *slog.Logger) MiddlewareFunc {
-	return func(next func(ctx context.Context, command Command) error) func(ctx context.Context, command Command) error {
-		return func(ctx context.Context, command Command) error {
+func SLogMiddleware[CMD Command](logger *slog.Logger) MiddlewareFunc[CMD] {
+	return func(next func(ctx context.Context, command CMD) error) func(ctx context.Context, command CMD) error {
+		return func(ctx context.Context, command CMD) error {
 			start := time.Now()
 			var (
 				err      = next(ctx, command)

@@ -13,24 +13,24 @@ type Store interface {
 	Open(ctx context.Context, entityType string, entityID string) es.Stream
 }
 
-func NewDispatcher(store Store, middlewares ...Middleware) *Dispatcher {
+func NewDispatcher[CMD Command](store Store, middlewares ...Middleware[CMD]) *Dispatcher[CMD] {
 	slices.Reverse(middlewares)
-	return &Dispatcher{
+	return &Dispatcher[CMD]{
 		store:       store,
-		executors:   make(map[string]func(ctx context.Context, entityID string, cmd Command) error),
+		executors:   make(map[string]func(ctx context.Context, entityID string, cmd CMD) error),
 		middlewares: middlewares,
 	}
 }
 
-type Dispatcher struct {
+type Dispatcher[CMD Command] struct {
 	store       Store
 	mux         sync.RWMutex
-	executors   map[string]func(ctx context.Context, entityID string, cmd Command) error
-	middlewares []Middleware
+	executors   map[string]func(ctx context.Context, entityID string, cmd CMD) error
+	middlewares []Middleware[CMD]
 }
 
-func (d *Dispatcher) Dispatch(ctx context.Context, entityID string, cmd Command) error {
-	if cmd == nil {
+func (d *Dispatcher[CMD]) Dispatch(ctx context.Context, entityID string, cmd CMD) error {
+	if any(cmd) == nil {
 		return fmt.Errorf("command %T is nil", cmd)
 	}
 

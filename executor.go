@@ -22,10 +22,10 @@ func (fn ExecutorFunc[C, S]) Execute(ctx context.Context, cmd C, state S) ([]es.
 	return fn(ctx, cmd, state)
 }
 
-func decorateExecutor[C Command, S State](store Store, entityType string, executor Executor[C, S]) func(ctx context.Context, entityID string, command Command) error {
+func decorateExecutor[C Command, S State, CMD Command](store Store, entityType string, executor Executor[C, S]) func(ctx context.Context, entityID string, command CMD) error {
 	var newStateFunc = newInstance[S]()
-	return func(ctx context.Context, entityID string, command Command) error {
-		cmd, ok := command.(C)
+	return func(ctx context.Context, entityID string, command CMD) error {
+		cmd, ok := Command(command).(C)
 		if !ok {
 			return fmt.Errorf("command %q is %T, expected %T", command.CommandName(), command, cmd)
 		}

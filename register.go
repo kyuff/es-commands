@@ -9,7 +9,7 @@ import (
 	"github.com/kyuff/es"
 )
 
-func Register[C Command, S es.Handler](dispatcher *Dispatcher, entityType string, executor Executor[C, S]) (err error) {
+func Register[C Command, S es.Handler, CMD Command](dispatcher *Dispatcher[CMD], entityType string, executor Executor[C, S]) (err error) {
 	dispatcher.mux.Lock()
 	defer dispatcher.mux.Unlock()
 
@@ -25,15 +25,15 @@ func Register[C Command, S es.Handler](dispatcher *Dispatcher, entityType string
 		return fmt.Errorf("command already registered: %s", name)
 	}
 
-	dispatcher.executors[name] = middlewareExecutor(
+	dispatcher.executors[name] = middlewareExecutor[CMD](
 		dispatcher.middlewares,
-		decorateExecutor(dispatcher.store, entityType, executor),
+		decorateExecutor[C, S, CMD](dispatcher.store, entityType, executor),
 	)
 
 	return nil
 }
 
-func RegisterFunc[C Command, S es.Handler](dispatcher *Dispatcher, entityType string, executor func(ctx context.Context, cmd C, state S) ([]es.Content, error)) error {
+func RegisterFunc[C Command, S es.Handler, CMD Command](dispatcher *Dispatcher[CMD], entityType string, executor func(ctx context.Context, cmd C, state S) ([]es.Content, error)) error {
 	return Register(dispatcher, entityType, ExecutorFunc[C, S](executor))
 }
 

@@ -4,18 +4,18 @@ import (
 	"context"
 )
 
-type Middleware interface {
-	Intercept(next func(ctx context.Context, command Command) error) func(ctx context.Context, command Command) error
+type Middleware[CMD Command] interface {
+	Intercept(next func(ctx context.Context, command CMD) error) func(ctx context.Context, command CMD) error
 }
-type MiddlewareFunc func(next func(ctx context.Context, command Command) error) func(ctx context.Context, command Command) error
+type MiddlewareFunc[CMD Command] func(next func(ctx context.Context, command CMD) error) func(ctx context.Context, command CMD) error
 
-func (fn MiddlewareFunc) Intercept(next func(ctx context.Context, command Command) error) func(ctx context.Context, command Command) error {
+func (fn MiddlewareFunc[CMD]) Intercept(next func(ctx context.Context, command CMD) error) func(ctx context.Context, command CMD) error {
 	return fn(next)
 }
 
-func middlewareExecutor(middlewares []Middleware, inner func(ctx context.Context, entityID string, command Command) error) func(ctx context.Context, entityID string, command Command) error {
-	return func(ctx context.Context, entityID string, command Command) error {
-		next := func(ctx context.Context, command Command) error {
+func middlewareExecutor[CMD Command](middlewares []Middleware[CMD], inner func(ctx context.Context, entityID string, command CMD) error) func(ctx context.Context, entityID string, command CMD) error {
+	return func(ctx context.Context, entityID string, command CMD) error {
+		next := func(ctx context.Context, command CMD) error {
 			return inner(ctx, entityID, command)
 		}
 
